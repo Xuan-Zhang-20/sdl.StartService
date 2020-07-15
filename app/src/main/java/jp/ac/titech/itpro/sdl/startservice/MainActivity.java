@@ -1,20 +1,36 @@
 package jp.ac.titech.itpro.sdl.startservice;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = MainActivity.class.getSimpleName();
+    IntentFilter intentFilter;
+    BroadcastReceiver broadcastReceiver;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate in " + Thread.currentThread());
         setContentView(R.layout.activity_main);
+
+        broadcastReceiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                Toast.makeText(context,intent.getStringExtra(Service3.EXTRA_MYARG),Toast.LENGTH_SHORT).show();
+            }
+        };
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(Service3.EXTRA_MYARG);
+        registerReceiver(broadcastReceiver,intentFilter);
     }
 
     public void onClickTest1(View v) {
@@ -28,6 +44,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onClickTest2 in " + Thread.currentThread());
         Intent intent = new Intent(this, Service2.class);
         intent.putExtra(Service2.EXTRA_MYARG, "Hello, Service2");
+        startService(intent);
+    }
+
+    public void onClickTest3(View v) {
+        Log.d(TAG,"onClickTest3 in "+Thread.currentThread());
+        Intent intent=new Intent(this,Service3.class);
+        intent.putExtra(Service3.EXTRA_MYARG,"Hello, Service3");
         startService(intent);
     }
 }
